@@ -1,0 +1,6 @@
+src/Mirror/obj/
+src/Mirror.bin/
+src/Mirror.CLI/obj/
+src/Mirror.CLI/bin/
+src/Mirror.Configuration/obj/
+src/Mirror.Configuration/bin/
