@@ -27,7 +27,7 @@ class Program
         {
             Overwrite = true,
             EnableProgress = true,
-            HashAlgorithm = "SHA256"
+            HashAlgorithm = HashAlgorithmType.SHA256
         };
 
         using var cts = new CancellationTokenSource();
@@ -49,8 +49,8 @@ class Program
         try
         {
             bool success = await copier.CopyWithVerificationAsync(
-                @"C:\Users\leba\Videos\Screen Recordings\Screen Recording 2024-06-26 154907.mp4",
-                @"C:\Users\leba\Desktop\test_large_file",
+                @"/Users/leotrim/Downloads/old/NTFS_Paragon_Driver.dmg",
+                @"/Users/leotrim/Desktop/test_file_to_delete",
                 options,
                 cts.Token);
 

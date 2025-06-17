@@ -4,19 +4,19 @@ public static class FileHasher
 {
     public static async Task<string> ComputeHashAsync(
         string path,
-        string algorithm = "SHA256",
+        HashAlgorithmType algorithm = HashAlgorithmType.SHA256,
         IProgress<double>? progress = null,
         CancellationToken cancellationToken = default)
     {
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
 
-        using HashAlgorithm hashAlgorithm = algorithm.ToUpperInvariant() switch
+        using HashAlgorithm hashAlgorithm = algorithm switch
         {
-            "SHA256" => SHA256.Create(),
-            "SHA1" => SHA1.Create(),
-            "MD5" => MD5.Create(),
-            "SHA384" => SHA384.Create(),
-            "SHA512" => SHA512.Create(),
+            HashAlgorithmType.SHA256 => SHA256.Create(),
+            HashAlgorithmType.SHA1 => SHA1.Create(),
+            HashAlgorithmType.MD5 => MD5.Create(),
+            HashAlgorithmType.SHA384 => SHA384.Create(),
+            HashAlgorithmType.SHA512 => SHA512.Create(),
             _ => throw new ArgumentException("Unsupported algorithm", nameof(algorithm))
         };
 
