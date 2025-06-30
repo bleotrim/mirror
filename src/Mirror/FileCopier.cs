@@ -1,7 +1,7 @@
 public class FileCopier
 {
     public event EventHandler<double>? CopyProgressChanged;
-    public event EventHandler<double>? HashProgressChanged;
+    public event EventHandler<HashProgressEventArgs>? HashProgressChanged;
     public event EventHandler<string>? StatusMessage;
 
     public async Task<bool> CopyWithVerificationAsync(string sourcePath, string destinationPath, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
@@ -14,22 +14,24 @@ public class FileCopier
         if (File.Exists(destinationPath) && !options.Overwrite)
             throw new IOException("Destination file exists and overwrite is false.");
 
-        EventHandler<double>? handler = null;
+        EventHandler<double>? internalHandler = null;
 
         StatusMessage?.Invoke(this, "Calculating source hash...");
         if (options.EnableProgress)
         {
-            handler = (s, p) => HashProgressChanged?.Invoke(this, p);
-            FileHasher.ProgressChanged += handler;
+            internalHandler = (s, p) =>
+                HashProgressChanged?.Invoke(this, new HashProgressEventArgs
+                {
+                    Progress = p,
+                    FileType = FileType.Source
+                });
+            FileHasher.ProgressChanged += internalHandler;
         }
 
-        var srcHash = await FileHasher.ComputeHashAsync(
-            sourcePath,
-            options.HashAlgorithm,
-            cancellationToken);
+        var srcHash = await FileHasher.ComputeHashAsync(sourcePath, options.HashAlgorithm, cancellationToken);
 
-        if (handler != null)
-            FileHasher.ProgressChanged -= handler;
+        if (internalHandler != null)
+            FileHasher.ProgressChanged -= internalHandler;
 
         StatusMessage?.Invoke(this, "Copying file...");
         await CopyFileAsync(sourcePath, destinationPath, options, cancellationToken);
@@ -37,17 +39,19 @@ public class FileCopier
         StatusMessage?.Invoke(this, "Calculating destination hash...");
         if (options.EnableProgress)
         {
-            handler = (s, p) => HashProgressChanged?.Invoke(this, p);
-            FileHasher.ProgressChanged += handler;
+            internalHandler = (s, p) =>
+                HashProgressChanged?.Invoke(this, new HashProgressEventArgs
+                {
+                    Progress = p,
+                    FileType = FileType.Destination
+                });
+            FileHasher.ProgressChanged += internalHandler;
         }
 
-        var dstHash = await FileHasher.ComputeHashAsync(
-            destinationPath,
-            options.HashAlgorithm,
-            cancellationToken);
+        var dstHash = await FileHasher.ComputeHashAsync(destinationPath, options.HashAlgorithm, cancellationToken);
 
-        if (handler != null)
-            FileHasher.ProgressChanged -= handler;
+        if (internalHandler != null)
+            FileHasher.ProgressChanged -= internalHandler;
 
         bool success = string.Equals(srcHash, dstHash, StringComparison.OrdinalIgnoreCase);
         StatusMessage?.Invoke(this, success ? "✅ File copied and verified." : "❌ Checksum mismatch.");
