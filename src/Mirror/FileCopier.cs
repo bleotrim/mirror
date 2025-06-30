@@ -14,22 +14,40 @@ public class FileCopier
         if (File.Exists(destinationPath) && !options.Overwrite)
             throw new IOException("Destination file exists and overwrite is false.");
 
+        EventHandler<double>? handler = null;
+
         StatusMessage?.Invoke(this, "Calculating source hash...");
+        if (options.EnableProgress)
+        {
+            handler = (s, p) => HashProgressChanged?.Invoke(this, p);
+            FileHasher.ProgressChanged += handler;
+        }
+
         var srcHash = await FileHasher.ComputeHashAsync(
             sourcePath,
             options.HashAlgorithm,
-            options.EnableProgress ? new Progress<double>(p => HashProgressChanged?.Invoke(this, p)) : null,
             cancellationToken);
+
+        if (handler != null)
+            FileHasher.ProgressChanged -= handler;
 
         StatusMessage?.Invoke(this, "Copying file...");
         await CopyFileAsync(sourcePath, destinationPath, options, cancellationToken);
 
         StatusMessage?.Invoke(this, "Calculating destination hash...");
+        if (options.EnableProgress)
+        {
+            handler = (s, p) => HashProgressChanged?.Invoke(this, p);
+            FileHasher.ProgressChanged += handler;
+        }
+
         var dstHash = await FileHasher.ComputeHashAsync(
             destinationPath,
             options.HashAlgorithm,
-            options.EnableProgress ? new Progress<double>(p => HashProgressChanged?.Invoke(this, p)) : null,
             cancellationToken);
+
+        if (handler != null)
+            FileHasher.ProgressChanged -= handler;
 
         bool success = string.Equals(srcHash, dstHash, StringComparison.OrdinalIgnoreCase);
         StatusMessage?.Invoke(this, success ? "✅ File copied and verified." : "❌ Checksum mismatch.");
