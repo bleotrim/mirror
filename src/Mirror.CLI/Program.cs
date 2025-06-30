@@ -10,17 +10,17 @@ class Program
 
         copier.CopyProgressChanged += (s, percent) =>
         {
-            Console.WriteLine($"Progresso copia: {percent:F2}%");
+            Console.Write($"Progresso copia: {percent:F2}%\r");
         };
 
         copier.HashProgressChanged += (s, percent) =>
         {
-            Console.WriteLine($"Progresso hash: {percent:F2}%");
+            Console.Write($"Progresso hash: {percent:F2}%\r");
         };
 
         copier.StatusMessage += (s, msg) =>
         {
-            Console.WriteLine($"Stato: {msg}");
+            Console.Write($"Stato: {msg}\r");
         };
 
         var options = new FileCopyOptions
@@ -49,7 +49,7 @@ class Program
         try
         {
             bool success = await copier.CopyWithVerificationAsync(
-                @"/Users/leotrim/Downloads/old/NTFS_Paragon_Driver.dmg",
+                @"/Users/leotrim/Downloads/file.dummy",
                 @"/Users/leotrim/Desktop/test_file_to_delete",
                 options,
                 cts.Token);
