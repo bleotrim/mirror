@@ -2,10 +2,11 @@ using System.Security.Cryptography;
 
 public static class FileHasher
 {
+    public static event EventHandler<double>? ProgressChanged;
+
     public static async Task<string> ComputeHashAsync(
         string path,
         HashAlgorithmType algorithm = HashAlgorithmType.SHA256,
-        IProgress<double>? progress = null,
         CancellationToken cancellationToken = default)
     {
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
@@ -35,7 +36,8 @@ public static class FileHasher
                 hashAlgorithm.TransformBlock(buffer, 0, read, null, 0);
 
             totalRead += read;
-            progress?.Report((double)totalRead / length * 100);
+
+            ProgressChanged?.Invoke(null, (double)totalRead / length * 100);
         }
 
         if (totalRead == length && length % buffer.Length == 0)
