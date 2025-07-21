@@ -1,3 +1,4 @@
+.DS_Store
 src/Mirror/obj/
 src/Mirror/bin/
 src/Mirror.CLI/obj/
