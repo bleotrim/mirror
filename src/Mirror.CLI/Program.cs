@@ -7,21 +7,12 @@ class Program
     static async Task Main()
     {
         var copier = new FileCopier();
+        var cts = new CancellationTokenSource();
 
-        copier.CopyProgressChanged += (s, percent) =>
-        {
-            Console.Write($"Progresso copia: {percent:F2}%\r");
-        };
-
-        copier.HashProgressChanged += (s, percent) =>
-        {
-            Console.Write($"Progresso hash: {percent:F2}%\r");
-        };
-
-        copier.StatusMessage += (s, msg) =>
-        {
-            Console.Write($"Stato: {msg}\r");
-        };
+        copier.StatusMessage += (s, msg) => Console.WriteLine($"[STATUS] {msg}");
+        copier.CopyProgressChanged += (s, p) => Console.WriteLine($"[COPY] {p:F2}%");
+        copier.HashProgressChanged += (s, e) =>
+            Console.WriteLine($"[HASH - {e.FileType}] {e.Progress:F2}%");
 
         var options = new FileCopyOptions
         {
@@ -30,41 +21,38 @@ class Program
             HashAlgorithm = HashAlgorithmType.SHA256
         };
 
-        using var cts = new CancellationTokenSource();
-
-        _ = Task.Run(() =>
+        _ = Task.Run(async () =>
         {
-            Console.WriteLine("Premi ESC per annullare...");
-            while (true)
+            while (!cts.IsCancellationRequested)
             {
-                if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)
+                if (Console.KeyAvailable)
                 {
-                    cts.Cancel();
-                    break;
+                    var key = Console.ReadKey(intercept: true);
+                    if (key.Key == ConsoleKey.Escape)
+                    {
+                        Console.WriteLine("Copy cancelled by user");
+                        cts.Cancel();
+                        break;
+                    }
                 }
-                Thread.Sleep(100); // Riduce il carico della CPU
+                Thread.Sleep(100);
             }
         });
 
         try
         {
-            bool success = await copier.CopyWithVerificationAsync(
-                @"/Users/leotrim/Downloads/file.dummy",
-                @"/Users/leotrim/Desktop/test_file_to_delete",
+            await copier.CopyDirectoryContentAsync(
+                @"/Users/leotrim/Downloads",
+                @"/Users/leotrim/Desktop/fortest",
                 options,
-                cts.Token);
+                cts.Token
+            );
 
-            Console.WriteLine(success
-                ? "✅ Copia riuscita!"
-                : "❌ Errore nella copia o checksum non corrispondente.");
+            Console.WriteLine("Directory copied successfully");
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine("⚠️ Operazione annullata.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Errore: {ex.Message}");
+            Console.WriteLine("Copy failed");
         }
     }
 }
