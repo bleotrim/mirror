@@ -67,7 +67,7 @@ public class FileCopier
         return success;
     }
 
-    public async Task CopyDirectoryAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task CopyDirectoryContentAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new FileCopyOptions();
 
@@ -89,7 +89,18 @@ public class FileCopier
             await CopyWithVerificationAsync(file, destinationFile, options, cancellationToken);
         }
     }
+    public async Task CopyDirectoryAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        options ??= new FileCopyOptions();
 
+        if (!Directory.Exists(sourceDir))
+            throw new DirectoryNotFoundException($"Source directory not found: {sourceDir}");
+
+        string rootFolderName = Path.GetFileName(sourceDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        string newDestinationRoot = Path.Combine(destinationDir, rootFolderName);
+
+        await CopyDirectoryContentAsync(sourceDir, newDestinationRoot, options, cancellationToken);
+    }
     private async Task CopyFileAsync(string source, string destination, FileCopyOptions options, CancellationToken cancellationToken)
     {
         const int bufferSize = 81920;
