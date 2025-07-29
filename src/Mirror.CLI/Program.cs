@@ -1,58 +1,78 @@
-﻿using System;
+﻿using CommandLine;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 class Program
 {
-    static async Task Main()
+    static async Task<int> Main(string[] args)
     {
-        var copier = new FileCopier();
-        var cts = new CancellationTokenSource();
+        return await Parser.Default.ParseArguments<CopyFileOptions, CopyDirContentOptions, CopyDirOptions>(args)
+            .MapResult(
+                (CopyFileOptions opts) => RunCopyFile(opts),
+                (CopyDirContentOptions opts) => RunCopyDirContent(opts),
+                (CopyDirOptions opts) => RunCopyDir(opts),
+                errs => Task.FromResult(1)
+            );
+    }
 
-        copier.StatusMessage += (s, msg) => Console.WriteLine($"[STATUS] {msg}");
-        copier.CopyProgressChanged += (s, p) => Console.WriteLine($"[COPY] {p:F2}%");
-        copier.HashProgressChanged += (s, e) =>
-            Console.WriteLine($"[HASH - {e.FileType}] {e.Progress:F2}%");
-
+    private static async Task<int> RunCopyFile(CopyFileOptions opts)
+    {
+        var copier = CreateCopier(opts.EnableProgress);
         var options = new FileCopyOptions
         {
-            Overwrite = true,
-            EnableProgress = true,
-            HashAlgorithm = HashAlgorithmType.SHA256
+            Overwrite = opts.Overwrite,
+            EnableProgress = opts.EnableProgress
         };
 
-        _ = Task.Run(async () =>
+        bool result = await copier.CopyWithVerificationAsync(opts.SourcePath, opts.DestinationPath, options);
+        return result ? 0 : 1;
+    }
+
+    private static async Task<int> RunCopyDirContent(CopyDirContentOptions opts)
+    {
+        var copier = CreateCopier(opts.EnableProgress);
+        var options = new FileCopyOptions
         {
-            while (!cts.IsCancellationRequested)
+            Overwrite = opts.Overwrite,
+            EnableProgress = opts.EnableProgress
+        };
+
+        await copier.CopyDirectoryContentAsync(opts.SourceDir, opts.DestinationDir, options);
+        return 0;
+    }
+
+    private static async Task<int> RunCopyDir(CopyDirOptions opts)
+    {
+        var copier = CreateCopier(opts.EnableProgress);
+        var options = new FileCopyOptions
+        {
+            Overwrite = opts.Overwrite,
+            EnableProgress = opts.EnableProgress
+        };
+
+        await copier.CopyDirectoryAsync(opts.SourceDir, opts.DestinationDir, options);
+        return 0;
+    }
+
+    private static FileCopier CreateCopier(bool showProgress)
+    {
+        var copier = new FileCopier();
+
+        copier.StatusMessage += (s, msg) => Console.WriteLine(msg);
+        if (showProgress)
+        {
+            copier.CopyProgressChanged += (s, p) =>
             {
-                if (Console.KeyAvailable)
-                {
-                    var key = Console.ReadKey(intercept: true);
-                    if (key.Key == ConsoleKey.Escape)
-                    {
-                        Console.WriteLine("Copy cancelled by user");
-                        cts.Cancel();
-                        break;
-                    }
-                }
-                Thread.Sleep(100);
-            }
-        });
+                Console.Write($"\rCopy Progress: {p:F2}%   ");
+            };
 
-        try
-        {
-            await copier.CopyDirectoryContentAsync(
-                @"/Users/leotrim/Downloads",
-                @"/Users/leotrim/Desktop/fortest",
-                options,
-                cts.Token
-            );
+            copier.HashProgressChanged += (s, e) =>
+            {
+                Console.Write($"\rHashing ({e.FileType}): {e.Progress:F2}%   ");
+            };
+        }
 
-            Console.WriteLine("Directory copied successfully");
-        }
-        catch (OperationCanceledException)
-        {
-            Console.WriteLine("Copy failed");
-        }
+        return copier;
     }
 }
