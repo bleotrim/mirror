@@ -86,7 +86,10 @@ public class FileCopier
             string destinationFile = Path.Combine(destinationDir, relativePath);
             Directory.CreateDirectory(Path.GetDirectoryName(destinationFile)!);
 
-            await CopyWithVerificationAsync(file, destinationFile, options, cancellationToken);
+            var result = await CopyWithVerificationAsync(file, destinationFile, options, cancellationToken);
+
+            if (!result)
+                throw new IOException($"Failed to copy file: {file} to {destinationFile}");
         }
     }
     public async Task CopyDirectoryAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
