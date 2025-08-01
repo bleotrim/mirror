@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +27,6 @@ class Program
             EnableProgress = opts.EnableProgress
         };
 
-        // ✅ Visualizza le info PRIMA della copia
         if (!File.Exists(opts.SourcePath))
         {
             Console.Error.WriteLine("Source file does not exist.");
@@ -35,7 +35,7 @@ class Program
 
         long sizeInBytes = new FileInfo(opts.SourcePath).Length;
 
-        Console.WriteLine("Copying:");
+        Console.WriteLine("Copying File:");
         Console.WriteLine($"From: {opts.SourcePath}");
         Console.WriteLine($"To:   {opts.DestinationPath}");
         Console.WriteLine($"Size: {FormatSize(sizeInBytes)}");
@@ -54,6 +54,22 @@ class Program
             EnableProgress = opts.EnableProgress
         };
 
+        if (!Directory.Exists(opts.SourceDir))
+        {
+            Console.Error.WriteLine("Source directory does not exist.");
+            return 1;
+        }
+
+        var files = Directory.GetFiles(opts.SourceDir, "*", SearchOption.AllDirectories);
+        long totalBytes = files.Sum(f => new FileInfo(f).Length);
+
+        Console.WriteLine("Copying Directory Content:");
+        Console.WriteLine($"From:  {opts.SourceDir}");
+        Console.WriteLine($"To:    {opts.DestinationDir}");
+        Console.WriteLine($"Files: {files.Length}");
+        Console.WriteLine($"Total Size: {FormatSize(totalBytes)}");
+        Console.WriteLine();
+
         await copier.CopyDirectoryContentAsync(opts.SourceDir, opts.DestinationDir, options);
         return 0;
     }
@@ -66,6 +82,24 @@ class Program
             Overwrite = opts.Overwrite,
             EnableProgress = opts.EnableProgress
         };
+
+        if (!Directory.Exists(opts.SourceDir))
+        {
+            Console.Error.WriteLine("Source directory does not exist.");
+            return 1;
+        }
+
+        var files = Directory.GetFiles(opts.SourceDir, "*", SearchOption.AllDirectories);
+        long totalBytes = files.Sum(f => new FileInfo(f).Length);
+        string rootFolderName = Path.GetFileName(opts.SourceDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        string newDestinationRoot = Path.Combine(opts.DestinationDir, rootFolderName);
+
+        Console.WriteLine("Copying Directory:");
+        Console.WriteLine($"From:  {opts.SourceDir}");
+        Console.WriteLine($"To:    {newDestinationRoot}");
+        Console.WriteLine($"Files: {files.Length}");
+        Console.WriteLine($"Total Size: {FormatSize(totalBytes)}");
+        Console.WriteLine();
 
         await copier.CopyDirectoryAsync(opts.SourceDir, opts.DestinationDir, options);
         return 0;

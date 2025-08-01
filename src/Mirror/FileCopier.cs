@@ -78,14 +78,26 @@ public class FileCopier
         Directory.CreateDirectory(destinationDir);
 
         var files = Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories);
+        int totalFiles = files.Length;
+        int currentFileIndex = 0;
 
         foreach (var file in files)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            currentFileIndex++;
             string relativePath = Path.GetRelativePath(sourceDir, file);
             string destinationFile = Path.Combine(destinationDir, relativePath);
             Directory.CreateDirectory(Path.GetDirectoryName(destinationFile)!);
+
+            var fileInfo = new FileInfo(file);
+            long size = fileInfo.Length;
+
+            StatusMessage?.Invoke(this,
+                $"[{currentFileIndex}/{totalFiles}]\n" +
+                $"Source:      {file}\n" +
+                $"Destination: {destinationFile}\n" +
+                $"Size:        {size} bytes");
 
             var result = await CopyWithVerificationAsync(file, destinationFile, options, cancellationToken);
 
