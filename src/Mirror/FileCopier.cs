@@ -3,6 +3,7 @@ public class FileCopier
     public event EventHandler<double>? CopyProgressChanged;
     public event EventHandler<HashProgressEventArgs>? HashProgressChanged;
     public event EventHandler<string>? StatusMessage;
+    public event EventHandler<FileCopiedEventArgs>? FileCopied;
 
     public async Task<bool> CopyWithVerificationAsync(string sourcePath, string destinationPath, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
     {
@@ -92,6 +93,7 @@ public class FileCopier
                 throw new IOException($"Failed to copy file: {file} to {destinationFile}");
         }
     }
+
     public async Task CopyDirectoryAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new FileCopyOptions();
@@ -104,6 +106,7 @@ public class FileCopier
 
         await CopyDirectoryContentAsync(sourceDir, newDestinationRoot, options, cancellationToken);
     }
+
     private async Task CopyFileAsync(string source, string destination, FileCopyOptions options, CancellationToken cancellationToken)
     {
         const int bufferSize = 81920;
@@ -129,5 +132,12 @@ public class FileCopier
                 CopyProgressChanged?.Invoke(this, percent);
             }
         }
+
+        FileCopied?.Invoke(this, new FileCopiedEventArgs
+        {
+            SourcePath = source,
+            DestinationPath = destination,
+            SizeInBytes = total
+        });
     }
 }

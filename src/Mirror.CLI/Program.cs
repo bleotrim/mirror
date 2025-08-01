@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +25,21 @@ class Program
             Overwrite = opts.Overwrite,
             EnableProgress = opts.EnableProgress
         };
+
+        // ✅ Visualizza le info PRIMA della copia
+        if (!File.Exists(opts.SourcePath))
+        {
+            Console.Error.WriteLine("Source file does not exist.");
+            return 1;
+        }
+
+        long sizeInBytes = new FileInfo(opts.SourcePath).Length;
+
+        Console.WriteLine("Copying:");
+        Console.WriteLine($"From: {opts.SourcePath}");
+        Console.WriteLine($"To:   {opts.DestinationPath}");
+        Console.WriteLine($"Size: {FormatSize(sizeInBytes)}");
+        Console.WriteLine();
 
         bool result = await copier.CopyWithVerificationAsync(opts.SourcePath, opts.DestinationPath, options);
         return result ? 0 : 1;
@@ -60,6 +76,7 @@ class Program
         var copier = new FileCopier();
 
         copier.StatusMessage += (s, msg) => Console.WriteLine(msg);
+
         if (showProgress)
         {
             copier.CopyProgressChanged += (s, p) =>
@@ -74,5 +91,18 @@ class Program
         }
 
         return copier;
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
     }
 }
