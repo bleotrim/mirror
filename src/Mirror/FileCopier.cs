@@ -12,6 +12,12 @@ public class FileCopier
         if (!File.Exists(sourcePath))
             throw new FileNotFoundException("Source file does not exist.", sourcePath);
 
+        if (Directory.Exists(destinationPath))
+        {
+            string fileName = Path.GetFileName(sourcePath);
+            destinationPath = Path.Combine(destinationPath, fileName);
+        }
+
         if (File.Exists(destinationPath) && !options.Overwrite)
             throw new IOException("Destination file exists and overwrite is false.");
 
