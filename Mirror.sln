@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.CLI", "src\Mirror.CL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror", "src\Mirror\Mirror.csproj", "{E3E41C34-6A76-4D78-9B60-9F7006D4601E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.Configuration", "src\Mirror.Configuration\Mirror.Configuration.csproj", "{88B9DE67-F7CE-48B0-98BA-B3D34801747C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,18 +43,6 @@ Global
 		{E3E41C34-6A76-4D78-9B60-9F7006D4601E}.Release|x64.Build.0 = Release|Any CPU
 		{E3E41C34-6A76-4D78-9B60-9F7006D4601E}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3E41C34-6A76-4D78-9B60-9F7006D4601E}.Release|x86.Build.0 = Release|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Debug|x64.Build.0 = Debug|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Debug|x86.Build.0 = Debug|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Release|x64.ActiveCfg = Release|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Release|x64.Build.0 = Release|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Release|x86.ActiveCfg = Release|Any CPU
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +50,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{62613D61-5A9B-4B20-82E1-7AF0AF0CBC0D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{E3E41C34-6A76-4D78-9B60-9F7006D4601E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{88B9DE67-F7CE-48B0-98BA-B3D34801747C} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
