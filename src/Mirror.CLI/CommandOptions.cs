@@ -15,6 +15,9 @@ public class CopyFileOptions
 
     [Option("progress", Default = true, HelpText = "Show progress.")]
     public bool EnableProgress { get; set; }
+
+    [Option("delete-source-if-verified", Default = false, HelpText = "Delete source file if copy is verified.")]
+    public bool DeleteSourceIfVerified { get; set; }
 }
 
 [Verb("copy-dir-content", HelpText = "Copies the files contained in a directory (does not include the root directory).")]
@@ -31,6 +34,9 @@ public class CopyDirContentOptions
 
     [Option("progress", Default = true, HelpText = "Show progress.")]
     public bool EnableProgress { get; set; }
+
+    [Option("delete-source-if-verified", Default = false, HelpText = "Delete source files if copy is verified.")]
+    public bool DeleteSourceIfVerified { get; set; }
 }
 
 [Verb("copy-dir", HelpText = "Copies an entire directory (including the root).")]
@@ -47,5 +53,7 @@ public class CopyDirOptions
 
     [Option("progress", Default = true, HelpText = "Show progress.")]
     public bool EnableProgress { get; set; }
-}
 
+    [Option("delete-source-if-verified", Default = false, HelpText = "Delete source files if copy is verified.")]
+    public bool DeleteSourceIfVerified { get; set; }
+}

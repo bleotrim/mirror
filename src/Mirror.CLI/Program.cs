@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 class Program
@@ -24,7 +23,8 @@ class Program
         var options = new FileCopyOptions
         {
             Overwrite = opts.Overwrite,
-            EnableProgress = opts.EnableProgress
+            EnableProgress = opts.EnableProgress,
+            DeleteSourceIfVerified = opts.DeleteSourceIfVerified
         };
 
         if (!File.Exists(opts.SourcePath))
@@ -51,7 +51,8 @@ class Program
         var options = new FileCopyOptions
         {
             Overwrite = opts.Overwrite,
-            EnableProgress = opts.EnableProgress
+            EnableProgress = opts.EnableProgress,
+            DeleteSourceIfVerified = opts.DeleteSourceIfVerified
         };
 
         if (!Directory.Exists(opts.SourceDir))
@@ -80,7 +81,8 @@ class Program
         var options = new FileCopyOptions
         {
             Overwrite = opts.Overwrite,
-            EnableProgress = opts.EnableProgress
+            EnableProgress = opts.EnableProgress,
+            DeleteSourceIfVerified = opts.DeleteSourceIfVerified
         };
 
         if (!Directory.Exists(opts.SourceDir))

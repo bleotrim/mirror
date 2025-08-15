@@ -4,7 +4,6 @@ public class FileCopier
     public event EventHandler<HashProgressEventArgs>? HashProgressChanged;
     public event EventHandler<string>? StatusMessage;
     public event EventHandler<FileCopiedEventArgs>? FileCopied;
-
     public async Task<bool> CopyWithVerificationAsync(string sourcePath, string destinationPath, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new FileCopyOptions();
@@ -69,11 +68,23 @@ public class FileCopier
             File.SetCreationTime(destinationPath, srcInfo.CreationTime);
             File.SetLastWriteTime(destinationPath, srcInfo.LastWriteTime);
             File.SetLastAccessTime(destinationPath, srcInfo.LastAccessTime);
+
+            if (options.DeleteSourceIfVerified)
+            {
+                try
+                {
+                    File.Delete(sourcePath);
+                    StatusMessage?.Invoke(this, $"Source file deleted: {sourcePath}");
+                }
+                catch (Exception ex)
+                {
+                    StatusMessage?.Invoke(this, $"Failed to delete source file: {ex.Message}");
+                }
+            }
         }
 
         return success;
     }
-
     public async Task CopyDirectoryContentAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new FileCopyOptions();
@@ -111,7 +122,6 @@ public class FileCopier
                 throw new IOException($"Failed to copy file: {file} to {destinationFile}");
         }
     }
-
     public async Task CopyDirectoryAsync(string sourceDir, string destinationDir, FileCopyOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new FileCopyOptions();
@@ -123,8 +133,20 @@ public class FileCopier
         string newDestinationRoot = Path.Combine(destinationDir, rootFolderName);
 
         await CopyDirectoryContentAsync(sourceDir, newDestinationRoot, options, cancellationToken);
-    }
 
+        if (options.DeleteSourceIfVerified && !Directory.EnumerateFiles(sourceDir).Any())
+        {
+            try
+            {
+                Directory.Delete(sourceDir, true);
+                StatusMessage?.Invoke(this, $"Source directory deleted: {sourceDir}");
+            }
+            catch (Exception ex)
+            {
+                StatusMessage?.Invoke(this, $"Failed to delete source directory: {ex.Message}");
+            }
+        }
+    }
     private async Task CopyFileAsync(string source, string destination, FileCopyOptions options, CancellationToken cancellationToken)
     {
         const int bufferSize = 81920;
