@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.CLI", "src\Mirror.CLI\Mirror.CLI.csproj", "{62613D61-5A9B-4B20-82E1-7AF0AF0CBC0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.CLI", "Mirror.CLI\Mirror.CLI.csproj", "{62613D61-5A9B-4B20-82E1-7AF0AF0CBC0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror", "src\Mirror\Mirror.csproj", "{E3E41C34-6A76-4D78-9B60-9F7006D4601E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror", "Mirror\Mirror.csproj", "{E3E41C34-6A76-4D78-9B60-9F7006D4601E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
