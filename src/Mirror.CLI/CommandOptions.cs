@@ -13,7 +13,7 @@ public class CopyFileOptions
     [Option("overwrite", Default = false, HelpText = "Overwrite if it exists.")]
     public bool Overwrite { get; set; }
 
-    [Option("progress", Default = true, HelpText = "Show progress.")]
+    [Option("progress", Default = false, HelpText = "Show progress.")]
     public bool EnableProgress { get; set; }
 
     [Option("delete-source-if-verified", Default = false, HelpText = "Delete source file if copy is verified.")]
@@ -32,7 +32,7 @@ public class CopyDirContentOptions
     [Option("overwrite", Default = false, HelpText = "Overwrite if it exists.")]
     public bool Overwrite { get; set; }
 
-    [Option("progress", Default = true, HelpText = "Show progress.")]
+    [Option("progress", Default = false, HelpText = "Show progress.")]
     public bool EnableProgress { get; set; }
 
     [Option("delete-source-if-verified", Default = false, HelpText = "Delete source files if copy is verified.")]
@@ -51,7 +51,7 @@ public class CopyDirOptions
     [Option("overwrite", Default = false, HelpText = "Overwrite if it exists.")]
     public bool Overwrite { get; set; }
 
-    [Option("progress", Default = true, HelpText = "Show progress.")]
+    [Option("progress", Default = false, HelpText = "Show progress.")]
     public bool EnableProgress { get; set; }
 
     [Option("delete-source-if-verified", Default = false, HelpText = "Delete source files if copy is verified.")]
